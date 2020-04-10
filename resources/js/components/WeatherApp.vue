@@ -1,10 +1,16 @@
 <template>
   <div class="p-2 text-white mb-8">
     <div class="places-input text-gray-800 ">
-      <input type="text" class="w-full p-2 rounded-sm" />
+      <input
+        type="search"
+        v-model="location.name"
+        id="location"
+        class="w-full p-2 rounded-sm"
+        placeholder="Start typing an address"
+      />
     </div>
     <div
-      class="weather-container font-sans w-128 max-w-lg overflow-hidden bg-gray-900 shadow-lg mt-4 rounded-lg"
+      class="weather-container font-sans w-128 max-w-lg overflow-hidden bg-gray-900 shadow-lg mt-5 rounded-lg"
     >
       <div class="current-weather flex items-center justify-between px-6 py-8">
         <div class="flex items-center">
@@ -64,6 +70,24 @@
 export default {
   mounted() {
     this.fetchData();
+    let placesAutoComplete = places({
+      container: document.querySelector("#location")
+    }).configure({
+      type: "city",
+      aroundLatLngViaIP: false
+    });
+    placesAutoComplete.on("change", ({ suggestion: e }) => {
+      console.log(e);
+      this.location.name = e.name;
+      this.location.lat = e.latlng.lat;
+      this.location.lng = e.latlng.lng;
+      this.fetchData();
+    });
+    placesAutoComplete.on("clear", e => {
+      this.location.name = "";
+      this.location.lat = 0;
+      this.location.lng = 0;
+    });
   },
   filters: {
     day(val) {

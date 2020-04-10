@@ -1970,9 +1970,37 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
+    var _this = this;
+
     this.fetchData();
+    var placesAutoComplete = places({
+      container: document.querySelector("#location")
+    }).configure({
+      type: "city",
+      aroundLatLngViaIP: false
+    });
+    placesAutoComplete.on("change", function (_ref) {
+      var e = _ref.suggestion;
+      console.log(e);
+      _this.location.name = e.name;
+      _this.location.lat = e.latlng.lat;
+      _this.location.lng = e.latlng.lng;
+
+      _this.fetchData();
+    });
+    placesAutoComplete.on("clear", function (e) {
+      _this.location.name = "";
+      _this.location.lat = 0;
+      _this.location.lng = 0;
+    });
   },
   filters: {
     day: function day(val) {
@@ -1999,7 +2027,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     fetchData: function fetchData() {
-      var _this = this;
+      var _this2 = this;
 
       var skycons = new Skycons({
         color: "white"
@@ -2009,19 +2037,19 @@ __webpack_require__.r(__webpack_exports__);
           lat: this.location.lat,
           lng: this.location.lng
         }
-      }).then(function (_ref) {
-        var _ref$data = _ref.data,
-            ct = _ref$data.currently,
-            daily = _ref$data.daily;
-        _this.currentTemp.actual = Math.round(ct.temperature);
-        _this.currentTemp.feels = Math.round(ct.apparentTemperature);
-        _this.currentTemp.summary = ct.summary;
-        _this.currentTemp.icon = _this.toKebabCase(ct.icon);
-        _this.daily = daily.data;
-        skycons.add("iconCurrent", _this.currentTemp.icon);
+      }).then(function (_ref2) {
+        var _ref2$data = _ref2.data,
+            ct = _ref2$data.currently,
+            daily = _ref2$data.daily;
+        _this2.currentTemp.actual = Math.round(ct.temperature);
+        _this2.currentTemp.feels = Math.round(ct.apparentTemperature);
+        _this2.currentTemp.summary = ct.summary;
+        _this2.currentTemp.icon = _this2.toKebabCase(ct.icon);
+        _this2.daily = daily.data;
+        skycons.add("iconCurrent", _this2.currentTemp.icon);
         skycons.play();
 
-        _this.$nextTick(function () {
+        _this2.$nextTick(function () {
           skycons.add("icon1", document.getElementById("icon1").getAttribute("data-icon"));
           skycons.add("icon2", document.getElementById("icon2").getAttribute("data-icon"));
           skycons.add("icon3", document.getElementById("icon3").getAttribute("data-icon"));
@@ -37410,13 +37438,39 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "p-2 text-white mb-8" }, [
-    _vm._m(0),
+    _c("div", { staticClass: "places-input text-gray-800 " }, [
+      _c("input", {
+        directives: [
+          {
+            name: "model",
+            rawName: "v-model",
+            value: _vm.location.name,
+            expression: "location.name"
+          }
+        ],
+        staticClass: "w-full p-2 rounded-sm",
+        attrs: {
+          type: "search",
+          id: "location",
+          placeholder: "Start typing an address"
+        },
+        domProps: { value: _vm.location.name },
+        on: {
+          input: function($event) {
+            if ($event.target.composing) {
+              return
+            }
+            _vm.$set(_vm.location, "name", $event.target.value)
+          }
+        }
+      })
+    ]),
     _vm._v(" "),
     _c(
       "div",
       {
         staticClass:
-          "weather-container font-sans w-128 max-w-lg overflow-hidden bg-gray-900 shadow-lg mt-4 rounded-lg"
+          "weather-container font-sans w-128 max-w-lg overflow-hidden bg-gray-900 shadow-lg mt-5 rounded-lg"
       },
       [
         _c(
@@ -37519,19 +37573,7 @@ var render = function() {
     )
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "places-input text-gray-800 " }, [
-      _c("input", {
-        staticClass: "w-full p-2 rounded-sm",
-        attrs: { type: "text" }
-      })
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
